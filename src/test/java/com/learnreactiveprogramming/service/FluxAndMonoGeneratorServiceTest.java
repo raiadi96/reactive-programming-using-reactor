@@ -17,6 +17,18 @@ public class FluxAndMonoGeneratorServiceTest {
     }
 
     @Test
+    void concatStringFlux(){
+        StepVerifier.create(service.concatStringFlux())
+                .expectNext("A")
+                .expectNext("B")
+                .expectNext("C")
+                .expectNext("D")
+                .expectNext("E")
+                .expectNext("F")
+                .expectNextCount(0)
+                .verifyComplete();
+    }
+    @Test
     void transformStringFlux() {
         StepVerifier.create(service.transform_fluxString())
                 .expectNextCount(17)
@@ -60,4 +72,67 @@ public class FluxAndMonoGeneratorServiceTest {
     void generateMonoFlatMapString() {
         StepVerifier.create(service.generateMonoFlatMapString()).expectNextCount(1).verifyComplete();
     }
-}
+
+    @Test
+    void generateFluxWithMergeSequential() {
+        StepVerifier.create(service.generateFluxWithMergeSequential())
+                .expectNext("A")
+                .expectNext("B")
+                .expectNext("C")
+                .expectNext("D")
+                .expectNext("E")
+                .expectNext("F")
+                .expectNextCount(0)
+                .verifyComplete();}
+
+    @Test
+    void generateFluxWithZipUsingAddition() {
+        StepVerifier.create(service.generateFluxWithZipUsingAddition())
+                .expectNext(5)
+                .expectNext(7)
+                .expectNext(9)
+                .expectNextCount(0)
+                .verifyComplete();
+    }
+
+    @Test
+    void createFluxException() {
+        StepVerifier.create(service.createFluxException())
+                .expectNext(1)
+                .expectNext(2)
+                .expectNext(3)
+                .expectError(RuntimeException.class)
+                .verify();
+    }
+
+    @Test
+    void exploreOnErrorReturn() {
+        StepVerifier.create(service.exploreOnErrorReturn())
+                .expectNext("A","B", "C")
+                .expectNext("Error")
+                .expectNext("D")
+                .expectNext("E")
+                .expectNext("F")
+                .verifyComplete();
+
+    }
+
+    @Test
+    void exploreOnErrorResume() {
+        StepVerifier.create(service.exploreOnErrorResume())
+                .expectNext("A","B", "C")
+                .expectNext("D")
+                .expectNext("E")
+                .expectNext("F")
+                .expectNext("G","H")
+                .verifyComplete();}
+
+    @Test
+    void doOnErrorExample() {
+        StepVerifier.create(service.doOnErrorExample())
+                .expectNext("A","B", "C")
+                .expectError(RuntimeException.class)
+                .verify();}
+    }
+
+
