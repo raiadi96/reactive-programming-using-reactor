@@ -30,6 +30,16 @@ public class MovieReactorService {
         });
     }
 
+    public Flux<Movie> getAllMovies_retry(){
+        Flux<MovieInfo> allMoviesFlux = this.movieInfoService.retrieveMoviesFlux();
+        return allMoviesFlux.flatMap(movieInfo -> {
+            var reviews = this.reviewService.retrieveReviewsFlux(movieInfo.getMovieInfoId()).collectList();
+            return reviews.map(review -> new Movie(movieInfo, review));
+        }).onErrorMap(ex ->{
+            log.error("Error retrieving reviews "+ ex.getMessage());
+            return  new MovieException(ex.getMessage());
+        }).retry().log();
+    }
 
     public Mono<Movie> getMovieById(@NonNull Long movieId) {
 

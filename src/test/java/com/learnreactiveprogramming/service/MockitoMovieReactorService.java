@@ -53,5 +53,23 @@ public class MockitoMovieReactorService {
                 .verify();
     }
 
+    @Test
+    void getAllMovies_retry() {
+        String errorMsg = "Error occured while fetching movies";
+        //given
+        Mockito
+                .when(movieInfoService.retrieveMoviesFlux())
+                .thenCallRealMethod();
+
+        Mockito
+                .when(reviewService.retrieveReviewsFlux(anyLong()))
+                .thenThrow(new RuntimeException(errorMsg));
+
+        StepVerifier
+                .create(movieReactorService.getAllMovies_retry())
+                .expectErrorMessage(errorMsg)
+                .verify();
+    }
+
 
 }
